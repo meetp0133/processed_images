@@ -1,5 +1,7 @@
 const sharp = require("sharp");
 const basePath =require("path")
+const jimp = require("jimp")
+// ----------------SHARP-------------------------
 
 exports.getMetadata = async(path)=> {
     try {
@@ -90,5 +92,34 @@ exports.addTextOnImage = async (path,width,height,text)=>{
             .toFile(`./image/test_overlay_images/${basename[0]}-text-overlay.${basename[1]}`);
     } catch (error) {
         console.log(error);
+    }
+}
+
+
+// ----------------JIMP-------------------------
+
+exports.rotate = async (path)=>{
+    try{
+        const basename = await basePath.basename(path).split(".")
+        const image = await jimp.read(path)
+        image.rotate(300,(err)=>{
+            if(err) console.log(err)
+            // image.rotate(159, jimp.RESIZE_BEZIER, function(err){
+            //     if (err) throw err;
+        }).write(`./image/rotate_images/${basename[0]}-rotated-jimp.${basename[1]}`)
+    }catch (e) {
+
+    }
+}
+
+exports.different = async(path1, path2)=>{
+    try{
+        let baseImg = await jimp.read(path1)
+        let testImg = await jimp.read(path2)
+        let diff = await jimp.diff(baseImg, testImg,0.1); // threshold ranges 0-1 (default: 0.1)
+        console.log(diff.image); // a Jimp image showing differences
+        console.log(diff.percent)
+    }catch (e) {
+
     }
 }
